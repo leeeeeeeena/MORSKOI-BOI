@@ -85,6 +85,7 @@ void displayMenu(const std::unordered_map<std::string, double>& rates, std::stri
 }
 
 int main() {
+setlocale(LC_ALL, "ru");
     std::unordered_map<std::string, double> rates = getExchangeRates();
 
     // Проверяем, были ли успешно получены валютные курсы
