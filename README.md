@@ -64,3 +64,59 @@ double convertCurrency(double amount, const std::string& from, const std::string
     }
     return (amount / itFrom->second) * itTo->second; // Конвертация валюты
 }
+void displayMenu(const std::unordered_map<std::string, double>& rates, std::string& fromCurrency, std::string& toCurrency) {
+    if (rates.empty()) {
+        std::cout << "Нет доступных валют для отображения." << std::endl;
+        return;
+    }
+
+    std::cout << "Доступные валюты:\n";
+    for (const auto& rate : rates) {
+        std::cout << rate.first << "\n"; // Вывод всех доступных валют
+    }
+
+    std::cout << "Выберите валюту из которой хотите перевести:\n";
+    std::cout << "Введите код валюты: ";
+    std::cin >> fromCurrency; // Ввод начальной валюты
+
+    std::cout << "Выберите валюту в которую хотите перевести:\n";
+    std::cout << "Введите код валюты: ";
+    std::cin >> toCurrency; // Ввод конечной валюты
+}
+
+int main() {
+    std::unordered_map<std::string, double> rates = getExchangeRates();
+
+    // Проверяем, были ли успешно получены валютные курсы
+    if (rates.empty()) {
+        std::cerr << "Не удалось загрузить курсы валют." << std::endl;
+        return 1; // Выходим с кодом ошибки
+    }
+
+    while (true) {
+        std::string fromCurrency, toCurrency;
+        displayMenu(rates, fromCurrency, toCurrency);  // Передаем обе переменные
+
+        std::cout << "Введите сумму валюты или 'exit' для выхода: ";
+        double amount;
+        std::string input;
+
+        std::getline(std::cin >> std::ws, input); // Чтение с удалением пробелов
+
+        if (input == "exit") {
+            break; // Выход из программы
+        }
+
+        try {
+            amount = std::stod(input); // Преобразование введенной строки в число
+            double result = convertCurrency(amount, fromCurrency, toCurrency, rates);
+
+            std::cout << amount << " " << fromCurrency << " = " << result << " " << toCurrency << std::endl; // Вывод результата
+        }
+        catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl; // Вывод ошибки
+        }
+    }
+
+    return 0;
+}
